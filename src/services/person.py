@@ -38,12 +38,15 @@ async def update_person(id: int, data: PersonUpdate, session: AsyncSession):
     data_to_update = await get_person(id, session)
 
     if data_to_update is not None:
-        update_data_dict = data.model_dump()
+        data_to_update.NoDocumento = data.NoDocumento
+        data_to_update.Nombres = data.Nombres
+        data_to_update.Apellidos = data.Apellidos
 
-        for k, v in update_data_dict.items():
-            setattr(data_to_update, k, v)
+        session.add(data_to_update)
 
         await session.commit()
+
+        await session.refresh(data_to_update)
 
         return data_to_update
     else:
